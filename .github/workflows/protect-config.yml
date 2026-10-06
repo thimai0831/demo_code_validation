@@ -1,0 +1,45 @@
+name: Security Guard
+
+on:
+  # ĐÂY LÀ CHÌA KHÓA: Luôn chạy kịch bản bảo vệ từ nhánh main!
+  pull_request_target:
+    branches: [ main ]
+
+jobs:
+  lock-files:
+    name: Protect Config Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Kiểm tra các file bị sửa đổi
+        # GitHub cấp sẵn token để sử dụng GitHub CLI (gh)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 1. Dùng GitHub CLI lấy danh sách các file member đã sửa trong PR
+          CHANGED_FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path')
+
+          # 2. Danh sách "Vùng Cấm" (Bao gồm cả chính file này và file lint)
+          RESTRICTED_FILES=(
+            ".sqlfluff"
+            ".pre-commit-config.yaml"
+            "pyproject.toml"
+            ".github/workflows/lint.yml"
+            ".github/workflows/protect-config.yml"
+          )
+
+          # 3. Kích hoạt bẫy nếu không phải là Data Lead
+          if [ "${{ github.actor }}" != "thimai0831" ]; then
+            for file in "${RESTRICTED_FILES[@]}"; do
+              # Lệnh grep -Fxq tìm chính xác tên file
+              if echo "$CHANGED_FILES" | grep -Fxq "$file"; then
+                echo "❌ BÁO ĐỘNG BẢO MẬT!"
+                echo "Thành viên ${{ github.actor }} không được phép sửa đổi file hệ thống: $file"
+                echo "Vui lòng Revert (hoàn tác) file này để được duyệt PR."
+                exit 1
+              fi
+            done
+          fi
+          echo "✅ Không phát hiện vi phạm sửa đổi cấu hình."

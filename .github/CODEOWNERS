@@ -1,8 +1,0 @@
-# Khóa các file cấu hình chung, bất kỳ thay đổi nào cũng cần @thimai0831 duyệt
-.sqlfluff                   @thimai0831
-.pre-commit-config.yaml     @thimai0831
-pyproject.toml              @thimai0831
-lint.yml                    @thimai0831
-
-# Khóa toàn bộ thư mục chứa kịch bản chạy CI/CD
-.github/workflows/          @thimai0831
