@@ -1,7 +1,7 @@
 name: Security Guard
 
 on:
-  # ĐÂY LÀ CHÌA KHÓA: Luôn chạy kịch bản bảo vệ từ nhánh main!
+  # Luôn chạy kịch bản bảo vệ từ nhánh main để tránh member bypass
   pull_request_target:
     branches: [ main ]
 
@@ -13,15 +13,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Kiểm tra các file bị sửa đổi
+      - name: Kiểm tra quyền Admin và các file bị sửa đổi
         # GitHub cấp sẵn token để sử dụng GitHub CLI (gh)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 1. Dùng GitHub CLI lấy danh sách các file member đã sửa trong PR
+          # 1. Kiểm tra quyền (Permission Role) của người tạo PR trong Repo
+          USER_PERM=$(gh api repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission --jq '.permission')
+          echo "Người mở PR: ${{ github.actor }} | Vai trò/Quyền hạn: $USER_PERM"
+
+          # 2. Dùng GitHub CLI lấy danh sách các file đã bị sửa đổi trong PR
           CHANGED_FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path')
 
-          # 2. Danh sách "Vùng Cấm" (Bao gồm cả chính file này và file lint)
+          # 3. Danh sách "Vùng Cấm" cấu hình hệ thống
           RESTRICTED_FILES=(
             ".sqlfluff"
             ".pre-commit-config.yaml"
@@ -30,16 +34,17 @@ jobs:
             ".github/workflows/protect-config.yml"
           )
 
-          # 3. Kích hoạt bẫy nếu không phải là Data Lead
-          if [ "${{ github.actor }}" != "thimai0831" ]; then
+          # 4. Nếu người mở PR KHÔNG PHẢI là Admin (admin) -> Tiến hành chặn
+          if [ "$USER_PERM" != "admin" ]; then
             for file in "${RESTRICTED_FILES[@]}"; do
               # Lệnh grep -Fxq tìm chính xác tên file
               if echo "$CHANGED_FILES" | grep -Fxq "$file"; then
                 echo "❌ BÁO ĐỘNG BẢO MẬT!"
-                echo "Thành viên ${{ github.actor }} không được phép sửa đổi file hệ thống: $file"
-                echo "Vui lòng Revert (hoàn tác) file này để được duyệt PR."
+                echo "Thành viên ${{ github.actor }} (Quyền hiện tại: $USER_PERM) không có quyền Admin để sửa đổi file hệ thống: $file"
+                echo "Vui lòng Revert (hoàn tác) file này để bài test được cho qua."
                 exit 1
               fi
             done
           fi
-          echo "✅ Không phát hiện vi phạm sửa đổi cấu hình."
+
+          echo "✅ Hợp lệ: Người thực hiện có quyền Admin hoặc không phát hiện vi phạm file cấu hình."
