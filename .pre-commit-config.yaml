@@ -1,5 +1,4 @@
 repos:
-  # 1. Kiểm tra & Format Python bằng Ruff
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.3.0
     hooks:
@@ -7,18 +6,16 @@ repos:
         args: [--fix]
       - id: ruff-format
 
-  # 2. Kiểm tra & Format SQL bằng SQLFluff
   - repo: https://github.com/sqlfluff/sqlfluff
     rev: 3.0.3
     hooks:
       - id: sqlfluff-lint
       - id: sqlfluff-fix
 
-  # 3. Các kiểm tra an toàn cơ bản
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
-      - id: detect-private-key # Chặn lỡ tay commit Private Key/Secret
+      - id: detect-private-key
