@@ -1,0 +1,1 @@
+select abc from TABLE ( ABCD );
