@@ -1,0 +1,20 @@
+[sqlfluff]
+# Đổi 'postgres' thành dialect team dùng: bigquery, snowflake, sparksql, mysql...
+dialect = postgres
+templater = raw
+max_line_length = 120
+
+[sqlfluff:indentation]
+tab_space_size = 4
+
+[sqlfluff:rules:capitalisation.keywords]
+# Bắt buộc từ khóa SQL phải viết HOA (SELECT, FROM, WHERE...)
+capitalisation_policy = upper
+
+[sqlfluff:rules:capitalisation.identifiers]
+# Bắt buộc tên bảng, tên cột viết thường
+capitalisation_policy = lower
+
+[sqlfluff:rules:aliasing.table]
+# Bắt buộc khai báo rõ alias bảng (ví dụ: FROM users AS u)
+aliasing = explicit

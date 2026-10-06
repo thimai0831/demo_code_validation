@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+# E: Syntax errors, F: Pyflakes, I: Sắp xếp import (isort), W: Warnings
+select = ["E", "F", "I", "W"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
