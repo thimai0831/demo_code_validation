@@ -5,7 +5,7 @@ WITH stg_orders AS (
         order_date,
         total_amount,
         order_status
-    FROM public.orders
+    FROM `public.orders`
     WHERE order_date >= '2026-01-01'
 ),
 
