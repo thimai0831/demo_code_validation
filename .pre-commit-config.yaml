@@ -1,17 +1,30 @@
 repos:
+  # -----------------------------------------------------------------
+  # 1. PYTHON (Ruff) - Chỉ khoanh vùng quét trong src/, tests/, scripts/
+  # -----------------------------------------------------------------
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.3.0
     hooks:
       - id: ruff
         args: [--fix]
+        files: ^(src|tests|scripts)/
       - id: ruff-format
+        files: ^(src|tests|scripts)/
 
+  # -----------------------------------------------------------------
+  # 2. BIGQUERY SQL (SQLFluff) - CHỈ QUÉT DUY NHẤT TRONG db/bigquery/
+  # -----------------------------------------------------------------
   - repo: https://github.com/sqlfluff/sqlfluff
     rev: 3.0.3
     hooks:
       - id: sqlfluff-lint
+        files: ^src/app/db/bigquery/
       - id: sqlfluff-fix
+        files: ^src/app/db/bigquery/
 
+  # -----------------------------------------------------------------
+  # 3. HOOKS BẢO MẬT & VỆ SINH MÃ NGUỒN (Quét toàn dự án)
+  # -----------------------------------------------------------------
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

@@ -1,0 +1,37 @@
+# ==============================================================================
+# CẤU HÌNH BỘ SOI CODE PYTHON (RUFF) - FILE ruff.toml ĐỘC LẬP
+# ==============================================================================
+
+line-length = 120
+target-version = "py310"
+
+# 1. KHAI BÁO SRC-LAYOUT (Cực kỳ quan trọng để Isort/Import không bị lỗi)
+# Giúp Ruff hiểu các module trong src/ là code nội bộ (first-party)
+src = ["src"]
+
+# 2. CHỈ ĐỊNH CÁC THƯ MỤC PYTHON CẦN QUÉT
+include = [
+    "src/**/*.py",
+    "tests/**/*.py",
+    "scripts/**/*.py"
+]
+
+# 3. BỎ QUẢ HOÀN TOÀN CÁC THƯ MỤC HỆ THỐNG / MÔI TRƯỜNG VẢO
+exclude = [
+    ".venv",
+    ".idea",
+    ".git",
+    "out"
+]
+
+# ------------------------------------------------------------------------------
+# BỘ QUY TẮC LINTING & FORMATTING
+# ------------------------------------------------------------------------------
+[lint]
+# E: Pycodestyle errors, F: Pyflakes, I: Import sorting (isort), W: Pycodestyle warnings
+select = ["E", "F", "I", "W"]
+ignore = []
+
+[format]
+quote-style = "double"
+indent-style = "space"

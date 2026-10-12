@@ -1,16 +1,37 @@
 [sqlfluff]
-# Khai báo dialect (bạn có thể đổi postgres thành bigquery, snowflake... tuỳ team)
-dialect = postgres
+# 1. Khai báo Dialect mặc định là BigQuery
+dialect = bigquery
 templater = raw
+
+# 2. Bỏ qua các thư mục hệ thống / môi trường ảo
+ignore_paths = .venv, .idea, .github, tests, out
 
 [sqlfluff:indentation]
 tab_space_size = 4
 
+# -----------------------------------------------------------------
+# BỘ QUY TẮC CHUẨN HÓA CÚ PHÁP (BIGQUERY CLEAN CODE)
+# -----------------------------------------------------------------
+
+# Từ khóa SQL (SELECT, FROM, WHERE, JOIN, GROUP BY...) -> BẮT BUỘC VIẾT HOA
 [sqlfluff:rules:capitalisation.keywords]
 capitalisation_policy = upper
 
+# Kiểu dữ liệu BigQuery (INT64, STRING, TIMESTAMP, ARRAY, STRUCT...) -> BẮT BUỘC VIẾT HOA
+[sqlfluff:rules:capitalisation.types]
+capitalisation_policy = upper
+
+# Tên cột, tên bảng, tên dataset -> BẮT BUỘC VIẾT THƯỜNG
 [sqlfluff:rules:capitalisation.identifiers]
 capitalisation_policy = lower
 
+# Alias cho bảng -> Bắt buộc có từ khóa AS (Ví dụ: FROM users AS u)
 [sqlfluff:rules:aliasing.table]
 aliasing = explicit
+
+# -----------------------------------------------------------------
+# KHOANH VÙNG CHÍNH XÁC THEO THƯ MỤC SRC-LAYOUT
+# -----------------------------------------------------------------
+# Áp dụng dialect BigQuery chính xác cho thư mục chứa mã nguồn SQL
+[sqlfluff:core:path:src/app/db/bigquery]
+dialect = bigquery
