@@ -21,23 +21,23 @@ jobs:
           USER_PERM=$(gh api repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission --jq '.permission')
           echo "Người mở PR: ${{ github.actor }} | Vai trò/Quyền hạn: $USER_PERM"
 
-          # 2. Dùng GitHub CLI lấy danh sách các file đã bị sửa đổi trong PR
-          CHANGED_FILES=$(gh pr view${{ github.event.pull_request.number }} --json files --jq '.files[].path')
+          # 2. Dùng GitHub CLI lấy danh sách các file đã bị sửa đổi trong PR (ĐÃ THÊM DẤU CÁCH)
+          CHANGED_FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path')
 
-          # 3. DANH SÁCH "VÙNG CẤM" CẤU HÌNH HỆ THỐNG (ĐÃ CẬP NHẬT)
+          # 3. DANH SÁCH "VÙNG CẤM" CẤU HÌNH HỆ THỐNG
           RESTRICTED_FILES=(
-            "ruff.toml"                   # 👈 THÊM MỚI: Khóa file luật Python
-            ".sqlfluff"                   # Khóa file luật BigQuery/SQL
-            ".pre-commit-config.yaml"     # Khóa file điều phối Runner
+            "ruff.toml"
+            ".sqlfluff"
+            ".pre-commit-config.yaml"
             ".github/workflows/lint.yml"
             ".github/workflows/protect-config.yml"
-            # ❌ ĐÃ BỎ pyproject.toml để Member thoải mái chạy lệnh `uv add`
           )
 
           # 4. Nếu người mở PR KHÔNG PHẢI là Admin (admin) -> Tiến hành chặn
           if [ "$USER_PERM" != "admin" ]; then
             for file in "${RESTRICTED_FILES[@]}"; do
-              if echo "$CHANGED_FILES" \vert{} grep -Fxq "$file"; then
+              # ĐÃ SỬA LỖI KÝ TỰ \vert{} THÀNH DẤU |
+              if echo "$CHANGED_FILES" | grep -Fxq "$file"; then
                 echo "❌ BÁO ĐỘNG BẢO MẬT!"
                 echo "Thành viên ${{ github.actor }} (Quyền hiện tại: $USER_PERM) không có quyền Admin để sửa đổi file hệ thống: $file"
                 echo "Vui lòng Revert (hoàn tác) file này để bài test được cho qua."
